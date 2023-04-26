@@ -1,0 +1,6 @@
+{
+    "$config": {
+        "org.opencontainers.image.title": "config.json"
+    },
+    "$manifest": {}
+}

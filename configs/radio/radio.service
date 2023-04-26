@@ -1,0 +1,16 @@
+[Unit]
+Description=Demo Radio service container
+Wants=engine.service
+After=vsomeip.service
+RequiresMountsFor=%t/containers
+
+[Service]
+TimeoutStopSec=70
+Restart=always
+ExecStart=/usr/bin/podman play kube --replace --service-container=true /etc/containers/systemd/radio.yml
+ExecStop=/usr/bin/podman play kube --down /etc/containers/systemd/radio.yml
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,17 @@
+{
+    "$manifest": {
+        "org.opencontainers.image.version": "1.0.0"
+    },
+    "vsomeip.service": {
+        "path": "/etc/containers/systemd/vsomeip.service",
+        "mode": "0755",
+        "user": "root",
+        "group": "root"
+    },
+    "vsomeip.yml": {
+        "path": "/etc/containers/systemd/vsomeip.yml",
+        "mode": "0755",
+        "user": "root",
+        "group": "root"
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "$manifest": {
+        "org.opencontainers.image.version": "1.0.0"
+    },
+    "engine.service": {
+        "path": "/etc/containers/systemd/engine.service",
+        "mode": "0755",
+        "user": "root",
+        "group": "root"
+    },
+    "engine.yml": {
+        "path": "/etc/containers/systemd/engine.yml",
+        "mode": "0755",
+        "user": "root",
+        "group": "root"
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "$manifest": {
+        "org.opencontainers.image.version": "1.0.0"
+    },
+    "radio.service": {
+        "path": "/etc/containers/systemd/radio.service",
+        "mode": "0755",
+        "user": "root",
+        "group": "root"
+    },
+    "radio.yml": {
+        "path": "/etc/containers/systemd/radio.yml",
+        "mode": "0755",
+        "user": "root",
+        "group": "root"
+    }
+}
