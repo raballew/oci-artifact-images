@@ -1,8 +1,6 @@
-# Container Lifecycle
+# SBOM OCI Artifact Images
 
-## Artifact Images
-
-### Manifest Config
+## Manifest Config
 
 According to [OCI Image Manifest
 Specification](https://github.com/opencontainers/image-spec/blob/master/manifest.md#image-manifest-property-descriptions),
@@ -31,7 +29,7 @@ For example, pushed images cannot be recognized or pulled by some versions of
 To push a pullable config the `oras` CLI can be used.
 
 ```bash
-$ cat config.json
+$ cat configuration.json
 {
     "foo": "bar"
 }
@@ -43,7 +41,7 @@ $ cat annotations.json
     }
 }
 
-$ oras push --config config.json --annotation-file annotations.json localhost:5000/hello:latest hi.txt
+$ oras push --config configuration.json --annotation-file annotations.json localhost:5000/hello:latest hi.txt
 Uploading a948904f2f0f hi.txt
 Uploading 57f840b6073c config.json
 Pushed localhost:5000/hello:latest
@@ -56,7 +54,7 @@ Pulled localhost:5000/hello:latest
 Digest: sha256:12e3de7e4a65ffc46a6158ac2df07ecc6fd1af8b0109b4c42a90067f7e907f43
 ```
 
-### Manifest Annotations
+## Manifest Annotations
 
 [Annotations](https://github.com/opencontainers/image-spec/blob/master/annotations.md),
 which are supported by [OCI Image
@@ -67,6 +65,32 @@ can be used to make annotations to the manifest, the config, and individual
 files using `oras` CLI. The details are described
 [here](https://oras.land/cli/4_manifest_annotations/).
 
-### Implementation
+## Usage
 
+This demo requires access to `ghcr.io` to setup a local artifact registry.
 
+```bash
+podman login ghcr.io
+make setup
+```
+
+Now build two AutoSD flavours. One has the `hirte-agent` installed, whereas
+the other has both `hirte-agent` and the `state-manager` installed.
+
+```bash
+make vm-images
+```
+
+Run one instance of the `state-manager` and two additional VMs.
+
+```bash
+make vm-instances
+```
+
+Then create, replace and delete the bundle:
+
+```bash
+make bundle-create
+make bundle-replace
+make bundle-delete
+```
