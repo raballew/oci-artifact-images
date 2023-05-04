@@ -1,0 +1,76 @@
+version: '2'
+mpp-vars:
+  name: container
+  use_containers: true
+pipelines:
+- mpp-import-pipelines:
+    path: include/build.ipp.yml
+- name: rootfs
+  build: name:build
+  stages:
+  - type: org.osbuild.kernel-cmdline
+    options:
+      root_fs_uuid:
+        mpp-eval: rootfs_uuid
+      kernel_opts:
+        mpp-eval: ''' '' .join(kernel_opts)'
+  - type: org.osbuild.rpm
+    options:
+      gpgkeys:
+      - mpp-eval: centos_gpg_key
+      - mpp-eval: redhat_gpg_key
+      disable_dracut: true
+    inputs:
+      packages:
+        type: org.osbuild.files
+        origin: org.osbuild.source
+        mpp-depsolve:
+          architecture: $arch
+          ignore-weak-deps: true
+          module-platform-id: $distro_module_id
+          baseurl: $distro_baseurl/BaseOS/$arch/os/
+          repos:
+            mpp-join:
+            - mpp-eval: image_repos
+            - mpp-eval: extra_repos
+            - - id: copr-sample-apps
+                baseurl: https://download.copr.fedorainfracloud.org/results/alexl/cs9-sample-images/centos-stream-9-$arch/
+          packages:
+            mpp-join:
+            - mpp-eval: image_rpms
+            - mpp-eval: extra_rpms
+            - - podman
+              - containernetworking-plugins
+              - curl
+              - hirte-agent
+          excludes:
+          - dracut-config-rescue
+  - type: org.osbuild.copy
+    inputs:
+      conf-hirte-agent:
+        type: org.osbuild.files
+        origin: org.osbuild.source
+        mpp-embed:
+          id: hirte-agent.conf
+          path: ../files/baz-hirte-agent.conf
+    options:
+      paths:
+      - from:
+          mpp-format-string: input://conf-hirte-agent/{embedded['hirte-agent.conf']}
+        to: tree:///etc/hirte/agent.conf
+  - type: org.osbuild.systemd
+    options:
+      enabled_services:
+      - hirte-agent.service
+  - type: org.osbuild.users
+    options:
+      users:
+        guest:
+          password:
+            mpp-eval: guest_password
+          gid:
+            mpp-eval: guest_gid
+          uid:
+            mpp-eval: guest_uid
+- mpp-import-pipelines:
+    path: include/image.ipp.yml
