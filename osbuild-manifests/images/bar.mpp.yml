@@ -65,6 +65,20 @@ pipelines:
       enabled_services:
       - hirte-agent.service
       - sshd.service
+  - type: org.osbuild.skopeo
+    inputs:
+      images:
+        type: org.osbuild.containers
+        origin: org.osbuild.source
+        mpp-resolve-images:
+          images:
+            - source: ghcr.io/oras-project/oras
+              digest: sha256:f0a335ec8c5b6f3878eaa76d15c291d7644c0da38087a9d00f401fffd2cbbe66
+              name: ghcr.io/oras-project/oras
+    options:
+      destination:
+        type: containers-storage
+        storage-path: /usr/share/containers/storage
   - type: org.osbuild.users
     options:
       users:
