@@ -67,6 +67,26 @@ files using `oras` CLI. The details are described
 
 ## Usage
 
+## WiFi routing
+
+Follow the instructions in this section if you are using a WiFi card as primary
+NIC.
+
+Copy `dnsmasq.conf` to `/etc/dnsmasq.conf`.
+
+```bash
+cp dnsmasq.conf /etc/dnsmasq.conf
+systemctl restart dnsmasq
+```
+
+Add `net.ipv4.ip_forward = 1` to `/etc/sysctl.conf` and run the following.
+
+```bash
+sysctl -p /etc/sysctl.conf
+```
+
+## Demo
+
 This demo requires access to `ghcr.io` to setup a local artifact registry.
 
 ```bash
@@ -74,23 +94,23 @@ podman login ghcr.io
 make setup
 ```
 
-Now build two AutoSD flavours. One has the `hirte-agent` installed, whereas
-the other has both `hirte-agent` and the `state-manager` installed.
+Now build two AutoSD flavours. One has the `hirte-agent` installed, whereas the
+other has both `hirte-agent` and the `state-manager` installed.
 
 ```bash
 make vm-images
 ```
 
-Run one instance of the `state-manager` and two additional VMs.
+Run three VMs.
 
 ```bash
 make vm-instances
 ```
 
-Then create, replace and delete the bundle:
+Then create, update and delete the bundle:
 
 ```bash
 make bundle-create
-make bundle-replace
+make bundle-update
 make bundle-delete
 ```

@@ -2,6 +2,7 @@ version: '2'
 mpp-vars:
   name: container
   use_containers: true
+  ssh_permit_root_login: true
 pipelines:
 - mpp-import-pipelines:
     path: include/build.ipp.yml
@@ -45,6 +46,7 @@ pipelines:
               - hirte
               - hirte-agent
               - hirte-ctl
+              - openssh-server
           excludes:
           - dracut-config-rescue
   - type: org.osbuild.copy
@@ -74,6 +76,7 @@ pipelines:
       enabled_services:
       - hirte.service
       - hirte-agent.service
+      - sshd.service
   - type: org.osbuild.users
     options:
       users:
@@ -84,5 +87,10 @@ pipelines:
             mpp-eval: guest_gid
           uid:
             mpp-eval: guest_uid
+  - type: org.osbuild.sshd.config
+    options:
+      config:
+        PermitRootLogin:
+          mpp-eval: ssh_permit_root_login
 - mpp-import-pipelines:
     path: include/image.ipp.yml

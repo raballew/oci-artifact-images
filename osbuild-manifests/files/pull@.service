@@ -6,6 +6,5 @@ After=network.target
 Type=oneshot
 ExecStart=/usr/bin/systemd-escape -u "%i" && /usr/bin/oras pull %i
 
-
 [Install]
 WantedBy=multi-user.target
