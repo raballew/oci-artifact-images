@@ -45,6 +45,7 @@ pipelines:
               - curl
               - hirte-agent
               - openssh-server
+              - jq
           excludes:
           - dracut-config-rescue
   - type: org.osbuild.copy
@@ -55,11 +56,29 @@ pipelines:
         mpp-embed:
           id: hirte-agent.conf
           path: ../files/baz-hirte-agent.conf
+      sh-apply-config:
+        type: org.osbuild.files
+        origin: org.osbuild.source
+        mpp-embed:
+          id: apply-config.sh
+          path: ../files/apply-config.sh
+      service-apply-config:
+        type: org.osbuild.files
+        origin: org.osbuild.source
+        mpp-embed:
+          id: apply-config@.service
+          path: ../files/apply-config@.service
     options:
       paths:
       - from:
           mpp-format-string: input://conf-hirte-agent/{embedded['hirte-agent.conf']}
         to: tree:///etc/hirte/agent.conf
+      - from:
+          mpp-format-string: input://sh-apply-config/{embedded['apply-config.sh']}
+        to: tree:///usr/local/bin/apply-config
+      - from:
+          mpp-format-string: input://service-apply-config/{embedded['apply-config@.service']}
+        to: tree:///etc/containers/systemd/apply-config@.service
   - type: org.osbuild.systemd
     options:
       enabled_services:

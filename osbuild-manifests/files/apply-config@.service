@@ -1,0 +1,10 @@
+[Unit]
+Description=Apply Config
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/apply-config %i
+
+[Install]
+WantedBy=multi-user.target
