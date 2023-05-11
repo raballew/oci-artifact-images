@@ -20,4 +20,4 @@ config:
 
 artifact: clean config
 		oras push --oci-layout ./$(TARGET_DIR):latest --config configuration.json:$(BUNDLE_ARTIFACT_TYPE) --annotation-file annotations.json
-		oras copy --from-oci-layout ./$(TARGET_DIR):latest $(REGISTRY)/$(REPO)/$(NAME)
+		oras copy --to-plain-http --from-oci-layout ./$(TARGET_DIR):latest $(REGISTRY)/$(REPO)/$(NAME)
