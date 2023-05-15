@@ -1,167 +1,167 @@
-version: '2'
+version: "2"
 mpp-vars:
   name: container
   use_containers: true
   ssh_permit_root_login: true
 pipelines:
-- mpp-import-pipelines:
-    path: include/build.ipp.yml
-- name: rootfs
-  build: name:build
-  stages:
-  - type: org.osbuild.kernel-cmdline
-    options:
-      root_fs_uuid:
-        mpp-eval: rootfs_uuid
-      kernel_opts:
-        mpp-eval: ''' '' .join(kernel_opts)'
-  - type: org.osbuild.rpm
-    options:
-      gpgkeys:
-      - mpp-eval: centos_gpg_key
-      - mpp-eval: redhat_gpg_key
-      disable_dracut: true
-    inputs:
-      packages:
-        type: org.osbuild.files
-        origin: org.osbuild.source
-        mpp-depsolve:
-          architecture: $arch
-          ignore-weak-deps: true
-          module-platform-id: $distro_module_id
-          baseurl: $distro_baseurl/BaseOS/$arch/os/
-          repos:
-            mpp-join:
-            - mpp-eval: image_repos
-            - mpp-eval: extra_repos
-            - - id: copr-sample-apps
-                baseurl: https://download.copr.fedorainfracloud.org/results/alexl/cs9-sample-images/centos-stream-9-$arch/
+  - mpp-import-pipelines:
+      path: include/build.ipp.yml
+  - name: rootfs
+    build: name:build
+    stages:
+      - type: org.osbuild.kernel-cmdline
+        options:
+          root_fs_uuid:
+            mpp-eval: rootfs_uuid
+          kernel_opts:
+            mpp-eval: "' ' .join(kernel_opts)"
+      - type: org.osbuild.rpm
+        options:
+          gpgkeys:
+            - mpp-eval: centos_gpg_key
+            - mpp-eval: redhat_gpg_key
+          disable_dracut: true
+        inputs:
           packages:
-            mpp-join:
-            - mpp-eval: image_rpms
-            - mpp-eval: extra_rpms
-            - - podman
-              - containernetworking-plugins
-              - curl
-              - hirte
-              - hirte-agent
-              - hirte-ctl
-              - openssh-server
-              - jq
-          excludes:
-          - dracut-config-rescue
-  - type: org.osbuild.copy
-    inputs:
-      conf-hirte:
-        type: org.osbuild.files
-        origin: org.osbuild.source
-        mpp-embed:
-          id: hirte.conf
-          path: ../files/foo-hirte.conf
-    options:
-      paths:
-      - from:
-          mpp-format-string: input://conf-hirte/{embedded['hirte.conf']}
-        to: tree:///etc/hirte/hirte.conf
-  - type: org.osbuild.copy
-    inputs:
-      conf-hirte-agent:
-        type: org.osbuild.files
-        origin: org.osbuild.source
-        mpp-embed:
-          id: hirte-agent.conf
-          path: ../files/foo-hirte-agent.conf
-    options:
-      paths:
-      - from:
-          mpp-format-string: input://conf-hirte-agent/{embedded['hirte-agent.conf']}
-        to: tree:///etc/hirte/agent.conf
-  - type: org.osbuild.copy
-    inputs:
-      sh-apply-config:
-        type: org.osbuild.files
-        origin: org.osbuild.source
-        mpp-embed:
-          id: apply-config.sh
-          path: ../files/apply-config.sh
-    options:
-      paths:
-      - from:
-          mpp-format-string: input://sh-apply-config/{embedded['apply-config.sh']}
-        to: tree:///usr/local/bin/apply-config
-  - type: org.osbuild.copy
-    inputs:
-      service-apply-config:
-        type: org.osbuild.files
-        origin: org.osbuild.source
-        mpp-embed:
-          id: apply-config@.service
-          path: ../files/apply-config@.service
-    options:
-      paths:
-      - from:
-          mpp-format-string: input://service-apply-config/{embedded['apply-config@.service']}
-        to: tree:///usr/lib/systemd/system/apply-config@.service
-  - type: org.osbuild.copy
-    inputs:
-      sh-apply-bundle:
-        type: org.osbuild.files
-        origin: org.osbuild.source
-        mpp-embed:
-          id: apply-bundle.sh
-          path: ../files/apply-bundle.sh
-    options:
-      paths:
-      - from:
-          mpp-format-string: input://sh-apply-bundle/{embedded['apply-bundle.sh']}
-        to: tree:///usr/local/bin/apply-bundle
-  - type: org.osbuild.copy
-    inputs:
-      service-apply-bundle:
-        type: org.osbuild.files
-        origin: org.osbuild.source
-        mpp-embed:
-          id: apply-bundle@.service
-          path: ../files/apply-bundle@.service
-    options:
-      paths:
-      - from:
-          mpp-format-string: input://service-apply-bundle/{embedded['apply-bundle@.service']}
-        to: tree:///usr/lib/systemd/system/apply-bundle@.service
-  - type: org.osbuild.systemd
-    options:
-      enabled_services:
-      - hirte.service
-      - hirte-agent.service
-      - sshd.service
-  - type: org.osbuild.skopeo
-    inputs:
-      images:
-        type: org.osbuild.containers
-        origin: org.osbuild.source
-        mpp-resolve-images:
+            type: org.osbuild.files
+            origin: org.osbuild.source
+            mpp-depsolve:
+              architecture: $arch
+              ignore-weak-deps: true
+              module-platform-id: $distro_module_id
+              baseurl: $distro_baseurl/BaseOS/$arch/os/
+              repos:
+                mpp-join:
+                  - mpp-eval: image_repos
+                  - mpp-eval: extra_repos
+                  - - id: copr-sample-apps
+                      baseurl: https://download.copr.fedorainfracloud.org/results/alexl/cs9-sample-images/centos-stream-9-$arch/
+              packages:
+                mpp-join:
+                  - mpp-eval: image_rpms
+                  - mpp-eval: extra_rpms
+                  - - podman
+                    - containernetworking-plugins
+                    - curl
+                    - hirte
+                    - hirte-agent
+                    - hirte-ctl
+                    - openssh-server
+                    - jq
+              excludes:
+                - dracut-config-rescue
+      - type: org.osbuild.copy
+        inputs:
+          conf-hirte:
+            type: org.osbuild.files
+            origin: org.osbuild.source
+            mpp-embed:
+              id: hirte.conf
+              path: ../files/foo-hirte.conf
+        options:
+          paths:
+            - from:
+                mpp-format-string: input://conf-hirte/{embedded['hirte.conf']}
+              to: tree:///etc/hirte/hirte.conf
+      - type: org.osbuild.copy
+        inputs:
+          conf-hirte-agent:
+            type: org.osbuild.files
+            origin: org.osbuild.source
+            mpp-embed:
+              id: hirte-agent.conf
+              path: ../files/foo-hirte-agent.conf
+        options:
+          paths:
+            - from:
+                mpp-format-string: input://conf-hirte-agent/{embedded['hirte-agent.conf']}
+              to: tree:///etc/hirte/agent.conf
+      - type: org.osbuild.copy
+        inputs:
+          sh-apply-config:
+            type: org.osbuild.files
+            origin: org.osbuild.source
+            mpp-embed:
+              id: apply-config.sh
+              path: ../files/apply-config.sh
+        options:
+          paths:
+            - from:
+                mpp-format-string: input://sh-apply-config/{embedded['apply-config.sh']}
+              to: tree:///usr/bin/apply-config
+      - type: org.osbuild.copy
+        inputs:
+          service-apply-config:
+            type: org.osbuild.files
+            origin: org.osbuild.source
+            mpp-embed:
+              id: apply-config@.service
+              path: ../files/apply-config@.service
+        options:
+          paths:
+            - from:
+                mpp-format-string: input://service-apply-config/{embedded['apply-config@.service']}
+              to: tree:///usr/lib/systemd/system/apply-config@.service
+      - type: org.osbuild.copy
+        inputs:
+          sh-apply-bundle:
+            type: org.osbuild.files
+            origin: org.osbuild.source
+            mpp-embed:
+              id: apply-bundle.sh
+              path: ../files/apply-bundle.sh
+        options:
+          paths:
+            - from:
+                mpp-format-string: input://sh-apply-bundle/{embedded['apply-bundle.sh']}
+              to: tree:///usr/bin/apply-bundle
+      - type: org.osbuild.copy
+        inputs:
+          service-apply-bundle:
+            type: org.osbuild.files
+            origin: org.osbuild.source
+            mpp-embed:
+              id: apply-bundle@.service
+              path: ../files/apply-bundle@.service
+        options:
+          paths:
+            - from:
+                mpp-format-string: input://service-apply-bundle/{embedded['apply-bundle@.service']}
+              to: tree:///usr/lib/systemd/system/apply-bundle@.service
+      - type: org.osbuild.systemd
+        options:
+          enabled_services:
+            - hirte.service
+            - hirte-agent.service
+            - sshd.service
+      - type: org.osbuild.skopeo
+        inputs:
           images:
-            - source: ghcr.io/oras-project/oras
-              digest: sha256:f0a335ec8c5b6f3878eaa76d15c291d7644c0da38087a9d00f401fffd2cbbe66
-              name: ghcr.io/oras-project/oras
-    options:
-      destination:
-        type: containers-storage
-        storage-path: /usr/share/containers/storage
-  - type: org.osbuild.users
-    options:
-      users:
-        guest:
-          password:
-            mpp-eval: guest_password
-          gid:
-            mpp-eval: guest_gid
-          uid:
-            mpp-eval: guest_uid
-  - type: org.osbuild.sshd.config
-    options:
-      config:
-        PermitRootLogin:
-          mpp-eval: ssh_permit_root_login
-- mpp-import-pipelines:
-    path: include/image.ipp.yml
+            type: org.osbuild.containers
+            origin: org.osbuild.source
+            mpp-resolve-images:
+              images:
+                - source: ghcr.io/oras-project/oras
+                  digest: sha256:f0a335ec8c5b6f3878eaa76d15c291d7644c0da38087a9d00f401fffd2cbbe66
+                  name: ghcr.io/oras-project/oras
+        options:
+          destination:
+            type: containers-storage
+            storage-path: /usr/share/containers/storage
+      - type: org.osbuild.users
+        options:
+          users:
+            guest:
+              password:
+                mpp-eval: guest_password
+              gid:
+                mpp-eval: guest_gid
+              uid:
+                mpp-eval: guest_uid
+      - type: org.osbuild.sshd.config
+        options:
+          config:
+            PermitRootLogin:
+              mpp-eval: ssh_permit_root_login
+  - mpp-import-pipelines:
+      path: include/image.ipp.yml
