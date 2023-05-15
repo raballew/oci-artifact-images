@@ -40,7 +40,7 @@ create-vm-instances:
 		sudo ip link set up dev tap1
 		sudo ip link set up dev tap2
 		sudo systemctl stop systemd-resolved
-		sudo pkill -9 dnsmasq
+		- sudo pkill -9 dnsmasq
 		sudo systemctl restart dnsmasq
 		sudo qemu-system-x86_64 -name foo,process=qemu-vm-foo -drive file=/usr/share/OVMF/OVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on -drive file=/usr/share/OVMF/OVMF_VARS.fd,if=pflash,format=raw,unit=1,snapshot=on,readonly=off -smp 2 -enable-kvm -m 2G -machine q35 -cpu host -device virtio-net-pci,netdev=n0,mac=FE:16:bc:41:2d:20 -netdev tap,id=n0,ifname=tap0,script=no,downscript=no -drive file=./target/osbuild-manifests/cs9-qemu-foo-ostree.x86_64.qcow2,index=0,media=disk,format=qcow2,if=virtio,snapshot=off -daemonize
 		sudo qemu-system-x86_64 -name bar,process=qemu-vm-bar -drive file=/usr/share/OVMF/OVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on -drive file=/usr/share/OVMF/OVMF_VARS.fd,if=pflash,format=raw,unit=1,snapshot=on,readonly=off -smp 2 -enable-kvm -m 2G -machine q35 -cpu host -device virtio-net-pci,netdev=n0,mac=FE:16:bc:41:2d:30 -netdev tap,id=n0,ifname=tap1,script=no,downscript=no -drive file=./target/osbuild-manifests/cs9-qemu-bar-ostree.x86_64.qcow2,index=0,media=disk,format=qcow2,if=virtio,snapshot=off -daemonize
