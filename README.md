@@ -95,7 +95,7 @@ make setup
 ```
 
 Now build two AutoSD flavours. One has the `hirte-agent` installed, whereas the
-other has both `hirte-agent` and the `state-manager` installed.
+other has both `hirte-agent` and the `hirte` installed.
 
 ```bash
 make vm-images
@@ -107,10 +107,17 @@ Run three VMs.
 make vm-instances
 ```
 
-Then create, update and delete the bundle:
+Then create, update and delete the bundles.
 
 ```bash
 make bundle-create
 make bundle-update
 make bundle-delete
+```
+
+Then cleanup the system.
+
+```bash
+make delete-vm-instances
+make teardown
 ```

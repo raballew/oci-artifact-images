@@ -1,5 +1,9 @@
 #!/bin/bash
 
+OP_CREATE="create"
+OP_UPDATE="update"
+OP_DELETE="delete"
+
 echo "escaped: $1"
 
 argument=$(systemd-escape -u "$1")
@@ -8,23 +12,35 @@ echo "unescaped: ${argument}"
 op="$(cut -d '-' -f 1 <<< "$argument")"
 config_image="$(cut -d ';' -f 2- <<< "$argument")"
 
-config=$(mktemp -p .)
+manifest=$(mktemp -p .)
+files_dir=$(mktemp -p . -d)
+
+podman run -t --rm -v /tmp/:/workspace ghcr.io/oras-project/oras:latest manifest fetch \
+    --plain-http \
+    ${config_image} > ${manifest}
 
 podman run -t --rm -v /tmp/:/workspace ghcr.io/oras-project/oras:latest pull \
+    --plain-http \
     ${config_image} \
-    --config ${config}
+    --output ${files_dir}
 
-number_of_steps=$(jq '.steps | length' ${bundle_config})
+number_of_layers=$(jq '.layers | length' ${manifest})
 
-for (( n=0; c < ${number_of_steps}; n++ ))
+for (( n=0; c < ${number_of_layers}; n++ ))
 do
-   config=$(jq ".steps[${n}].config" ${bundle_config} -r)
-   node=$(jq ".steps[${n}].node" ${bundle_config} -r)
-   op=$(jq ".steps[${n}].op" ${bundle_config} -r)
+    file=$(jq --argjson index ${n} '.layers[$index].annotations."org.opencontainers.image.title"' ${bundle_config} -r)
+    path=$(jq --argjson index ${n} '.layers[$index].annotations.path' ${bundle_config} -r)
+    op=$(jq --argjson index ${n} '.layers[$index].op' ${bundle_config} -r)
 
-   hirtectl start ${node} apply-config@${op}-${config}.service
+    if [ "$op" = "$OP_CREATE" ]; then
+        cp -f ${files_dir}/${file} ${path}
+    else if [ "$op" = "$OP_UPDATE" ]; then
+        rm ${path}
+        cp -f ${files_dir}/${file} ${path}
+    else if [ "$op" = "$OP_DELETE" ]; then
+        rm ${path}
+    fi
 done
 
-rm ${bundle_config}
-
-# oras pull localhost:5000/hirte/bundle@sha256:d8a0aabef1fc8d8501c586be0994be00f0c6b9b6b931e5eb9e4a9dca1498ad7e --config
+rm ${manifest}
+rm -rf ${files_dir}
