@@ -55,7 +55,7 @@ pipelines:
             origin: org.osbuild.source
             mpp-embed:
               id: hirte-agent.conf
-              path: ../files/baz-hirte-agent.conf
+              path: ../files/bar-hirte-agent.conf
         options:
           paths:
             - from:
