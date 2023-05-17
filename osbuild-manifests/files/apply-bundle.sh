@@ -9,7 +9,7 @@ echo "unescaped: ${bundle_image}"
 
 bundle_config=$(mktemp -p .)
 
-podman run -t --rm -v /tmp/:/workspace ghcr.io/oras-project/oras::v1.0.0 pull \
+podman run -t --rm -v /tmp/:/workspace ghcr.io/oras-project/oras:latest pull \
     --plain-http \
     ${bundle_image} \
     --config ${bundle_config}
