@@ -5,7 +5,7 @@ set -e
 bundle_image=$(systemd-escape -u "$1")
 files_dir=$(mktemp -d)
 
-podman run -t --rm -v ${files_dir}:/workspace:z ghcr.io/oras-project/oras:latest pull \
+podman run -t --pull never --rm -v ${files_dir}:/workspace:z ghcr.io/oras-project/oras:latest pull \
     --plain-http \
     ${bundle_image} \
     --config config.json
@@ -18,8 +18,8 @@ do
     node=$(jq --argjson index ${n} '.steps[$index].node' ${files_dir}/config.json -r)
     op=$(jq --argjson index ${n} '.steps[$index].op' ${files_dir}/config.json -r)
 
-    service=$(systemd-escape "apply-config@${op}-${config}.service")
-    hirtectl start ${node} ${service}
+    name=$(systemd-escape "${op}-${config}")
+    hirtectl start ${node} "apply-config@${name}.service"
 done
 
 rm -rf ${files_dir}

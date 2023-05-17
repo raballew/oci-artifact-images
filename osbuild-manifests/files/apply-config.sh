@@ -16,12 +16,12 @@ config_image="$(cut -d '-' -f 2 <<< "$argument")"
 
 files_dir=$(mktemp -d)
 
-podman run -t --rm -v ${files_dir}:/workspace:z ghcr.io/oras-project/oras:v1.0.0 manifest fetch \
+podman run -t --pull never --rm -v ${files_dir}:/workspace:z ghcr.io/oras-project/oras:latest manifest fetch \
     --plain-http \
     ${config_image} \
     --output manifest.json
 
-podman run -t --rm -v ${files_dir}:/workspace:z ghcr.io/oras-project/oras:v1.0.0 pull \
+podman run -t --pull never --rm -v ${files_dir}:/workspace:z ghcr.io/oras-project/oras:latest pull \
     --plain-http \
     ${config_image} \
     --output ./
