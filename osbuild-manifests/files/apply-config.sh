@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 OP_CREATE="create"
 OP_UPDATE="update"
 OP_DELETE="delete"
@@ -26,7 +28,7 @@ podman run -t --rm -v /tmp/:/workspace ghcr.io/oras-project/oras:latest pull \
 
 number_of_layers=$(jq '.layers | length' ${manifest})
 
-for (( n=0; c < ${number_of_layers}; n++ ))
+for (( n=0; n<${number_of_layers}; n++ ))
 do
     file=$(jq --argjson index ${n} '.layers[$index].annotations."org.opencontainers.image.title"' ${bundle_config} -r)
     path=$(jq --argjson index ${n} '.layers[$index].annotations.path' ${bundle_config} -r)

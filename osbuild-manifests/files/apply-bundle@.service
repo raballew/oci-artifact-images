@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/apply-bundle %i
+ExecStart=/usr/bin/apply-bundle "%i"
 
 [Install]
 WantedBy=multi-user.target

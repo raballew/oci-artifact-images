@@ -87,6 +87,11 @@ pipelines:
             - from:
                 mpp-format-string: input://service-apply-config/{embedded['apply-config@.service']}
               to: tree:///usr/lib/systemd/system/apply-config@.service
+      - type: org.osbuild.chmod
+        options:
+          items:
+            "/usr/bin/apply-config":
+              mode: a+x
       - type: org.osbuild.systemd
         options:
           enabled_services:

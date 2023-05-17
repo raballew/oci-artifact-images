@@ -61,10 +61,6 @@ configs: config-engine config-radio config-vsomeip
 
 config-engine:
 		make -C configs/engine artifact
-# sshpass -p 'password' ssh root@172.16.100.20 -o "UserKnownHostsFile=/dev/null" -o PubkeyAuthentication=no -o PreferredAuthentications=password -o StrictHostKeyChecking=no
-
-# hirtectl on foo trigger pull.service
-# oras pull --plain-http 172.16.100.1:5000/...
 
 config-radio:
 		make -C configs/radio artifact

@@ -21,3 +21,4 @@ config:
 artifact: clean config
 		oras push --oci-layout ./$(TARGET_DIR):latest --config configuration.json:$(BUNDLE_ARTIFACT_TYPE) --annotation-file annotations.json
 		oras copy --to-plain-http --from-oci-layout ./$(TARGET_DIR):latest $(REGISTRY)/$(REPO)/$(NAME)
+#		- sshpass -p 'password' ssh root@172.16.100.20 -o "UserKnownHostsFile=/dev/null" -o PubkeyAuthentication=no -o PreferredAuthentications=password -o StrictHostKeyChecking=no -C
