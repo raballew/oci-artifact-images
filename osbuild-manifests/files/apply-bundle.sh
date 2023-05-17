@@ -5,7 +5,7 @@ set -e
 bundle_image=$(systemd-escape -u "$1")
 files_dir=$(mktemp -d)
 
-podman run -t --rm -v ${files_dir}:/workspace:z ghcr.io/oras-project/oras:v1.0.0 pull \
+podman run -t --rm -v ${files_dir}:/workspace:z ghcr.io/oras-project/oras:latest pull \
     --plain-http \
     ${bundle_image} \
     --config config.json
